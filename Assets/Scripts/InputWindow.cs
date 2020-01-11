@@ -50,6 +50,12 @@ public class InputWindow
     
     private void OnButtonPressed(KeyCode keyCode)
     {
+        if (anyButtonPressed)
+        {
+            Debug.Log("Can't take more than one input, try to be precise");
+            return;
+        }
+
         if (keyCode == requiredKeyCode)
         {
             Debug.Log("Correct Input");
