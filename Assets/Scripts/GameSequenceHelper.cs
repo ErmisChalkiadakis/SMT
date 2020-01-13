@@ -70,7 +70,7 @@ public class GameSequenceHelper : MonoBehaviour
     private IEnumerator CompletePlaySession()
     {
         SubmitPlayData();
-        yield return new WaitForSecondsRealtime(4f);
+        yield return new WaitForSecondsRealtime(3f);
         
         if (!GameDataHelper.Instance.isStudyComplete)
         {
@@ -78,7 +78,8 @@ public class GameSequenceHelper : MonoBehaviour
         }
         else
         {
-            Debug.Log("Game Completed");
+            GameDataHelper.Instance.RestartInstance();
+            SceneManager.LoadScene(SceneConstants.INTRO_SCENE_HASH);
         }
     }
 
