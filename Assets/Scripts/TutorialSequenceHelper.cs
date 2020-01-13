@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TutorialSequenceHelper : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class TutorialSequenceHelper : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] introTextsSecondTutorial;
     [SerializeField] private TextAsset[] tutorialSoundSequencesPitch;
     [SerializeField] private TextAsset[] tutorialSoundSequencesRhythm;
+    [SerializeField] private RawImage[] arrowKeys;
 
     private InputWindow activeInputWindow;
     private bool isPitchTutorial;
@@ -81,6 +83,7 @@ public class TutorialSequenceHelper : MonoBehaviour
     {
         if (soundSequenceIndex < activeSoundSequences.Length)
         {
+            HighlightArrowKey(soundSequenceIndex);
             audioMixer.Initialize(SoundSequenceParserHelper.ParseTextFile(activeSoundSequences[soundSequenceIndex]));
             soundSequenceIndex++;
         }
@@ -103,6 +106,21 @@ public class TutorialSequenceHelper : MonoBehaviour
             return tutorialSoundSequencesPitch;
         }
         return tutorialSoundSequencesRhythm;
+    }
+
+    private void HighlightArrowKey(int index)
+    {
+        for (int i = 0; i < arrowKeys.Length; i++)
+        {
+            if (i == index)
+            {
+                arrowKeys[i].color = new Color(1f, 1f, 1f, 1f);
+            }
+            else
+            {
+                arrowKeys[i].color = new Color(1f, 1f, 1f, 0.3f);
+            }
+        }
     }
 
     private IEnumerator CreateNextInputWindow(AudioClip audioClip, double delayUntilClipStarts)
@@ -158,6 +176,7 @@ public class TutorialSequenceHelper : MonoBehaviour
         {
             SetAudioActive(true);
             audioMixer.Initialize(SoundSequenceParserHelper.ParseTextFile(activeSoundSequences[soundSequenceIndex]));
+            StartCoroutine(ShowArrowKeys());
             soundSequenceIndex++;
         }
     }
@@ -165,6 +184,8 @@ public class TutorialSequenceHelper : MonoBehaviour
     private IEnumerator CompleteTutorialAfterSeconds(float delay)
     {
         yield return new WaitForSecondsRealtime(1.848f);
+
+        StartCoroutine(HideArrowKeys());
 
         Color fadeColor = tutorialCompletedText.color;
         while (tutorialCompletedText.color.a < 1f)
@@ -186,5 +207,34 @@ public class TutorialSequenceHelper : MonoBehaviour
         yield return new WaitForSecondsRealtime(delay);
 
         OnTutorialCompletedEvent?.Invoke();
+    }
+    
+    private IEnumerator ShowArrowKeys()
+    {
+        Color arrowAlpha = new Color(1f, 1f, 1f, 0f);
+        while (arrowKeys[0].color.a < 0.3f)
+        {
+            foreach(RawImage arrowKey in arrowKeys)
+            {
+                arrowAlpha.a += textFadeSpeed / 5f;
+                arrowKey.color = arrowAlpha;
+            }
+            yield return null;
+        }
+        HighlightArrowKey(0);
+    }
+
+    private IEnumerator HideArrowKeys()
+    {
+        Color arrowAlpha = new Color(1f, 1f, 1f, 0.3f);
+        while (arrowKeys[0].color.a > 0f)
+        {
+            foreach (RawImage arrowKey in arrowKeys)
+            {
+                arrowAlpha.a -= textFadeSpeed / 5f;
+                arrowKey.color = arrowAlpha;
+            }
+            yield return null;
+        }
     }
 }
