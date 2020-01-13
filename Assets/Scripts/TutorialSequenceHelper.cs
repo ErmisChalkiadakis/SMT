@@ -13,6 +13,7 @@ public class TutorialSequenceHelper : MonoBehaviour
     [SerializeField] private InputSystem inputSystem;
     [SerializeField] private UpdateCallback updateCallback;
     [SerializeField] private SoundLibrary soundLibrary;
+    [SerializeField] private TextMeshProUGUI tutorialCompletedText;
     [SerializeField] private TextMeshProUGUI[] introTextsFirstTutorial;
     [SerializeField] private TextMeshProUGUI[] introTextsSecondTutorial;
     [SerializeField] private TextAsset[] tutorialSoundSequencesPitch;
@@ -86,7 +87,7 @@ public class TutorialSequenceHelper : MonoBehaviour
         else
         {
             Debug.Log("Tutorial Completed");
-            StartCoroutine(CompleteTutorialAfterSeconds(4f));
+            StartCoroutine(CompleteTutorialAfterSeconds(1f));
         }
     }
 
@@ -163,6 +164,25 @@ public class TutorialSequenceHelper : MonoBehaviour
 
     private IEnumerator CompleteTutorialAfterSeconds(float delay)
     {
+        yield return new WaitForSecondsRealtime(1.848f);
+
+        Color fadeColor = tutorialCompletedText.color;
+        while (tutorialCompletedText.color.a < 1f)
+        {
+            fadeColor.a += textFadeSpeed;
+            tutorialCompletedText.color = fadeColor;
+            yield return null;
+        }
+
+        yield return new WaitForSecondsRealtime(6.5f);
+
+        while (tutorialCompletedText.color.a > 0f)
+        {
+            fadeColor.a -= textFadeSpeed;
+            tutorialCompletedText.color = fadeColor;
+            yield return null;
+        }
+
         yield return new WaitForSecondsRealtime(delay);
 
         OnTutorialCompletedEvent?.Invoke();
