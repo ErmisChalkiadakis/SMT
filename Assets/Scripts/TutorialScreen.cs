@@ -9,12 +9,9 @@ public class TutorialScreen : MonoBehaviour
     [SerializeField] private TutorialSequenceHelper tutorialSequenceHelper;
     [SerializeField] private RawImage fader;
     
-    private int playSessionID;
-    
     public void Start()
     {
-        playSessionID = DataHelper.Instance.PlaySessionID;
-        tutorialSequenceHelper.SetTutorial(playSessionID % 2 == 0);
+        tutorialSequenceHelper.SetTutorial(GameDataHelper.Instance.isPitchNext);
         tutorialSequenceHelper.OnTutorialCompletedEvent += OnTutorialCompleted;
     }
     

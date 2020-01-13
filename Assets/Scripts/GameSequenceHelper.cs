@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameSequenceHelper : MonoBehaviour
 {
@@ -12,7 +13,6 @@ public class GameSequenceHelper : MonoBehaviour
     private List<int> correctnessPerformance = new List<int>();
 
     private InputWindow activeInputWindow;
-    private int playSessionID;
 
     public void Start()
     {
@@ -26,11 +26,6 @@ public class GameSequenceHelper : MonoBehaviour
         audioMixer.OnQueueFinishedEvent -= OnQueueFinished;
     }
 
-    public void SetPlaySessionID(int playSessionID)
-    {
-        this.playSessionID = playSessionID;
-    }
-
     private void OnSoundScheduled(AudioClip audioClip, double intervalUntilScheduledTime)
     {
         StartCoroutine(CreateNextInputWindow(audioClip, intervalUntilScheduledTime));
@@ -38,6 +33,8 @@ public class GameSequenceHelper : MonoBehaviour
 
     private void OnQueueFinished()
     {
+        GameDataHelper.Instance.SessionFinished();
+
         StartCoroutine(CompletePlaySession());
     }
 
@@ -67,24 +64,22 @@ public class GameSequenceHelper : MonoBehaviour
 
     private void SubmitPlayData()
     {
-        DataHelper.Instance.SubmitPlayData(GetStudyGroup(), correctnessPerformance.ToArray());
+        GameDataHelper.Instance.SubmitPlayData(correctnessPerformance.ToArray());
     }
-
-    private string GetStudyGroup()
-    {
-        if (playSessionID % 2 == 0)
-        {
-            return "AB";
-        }
-        return "BA";
-    }
-
+    
     private IEnumerator CompletePlaySession()
     {
-        yield return new WaitForSecondsRealtime(4f);
-
-        Debug.Log("Game Completed");
         SubmitPlayData();
+        yield return new WaitForSecondsRealtime(4f);
+        
+        if (!GameDataHelper.Instance.isStudyComplete)
+        {
+            SceneManager.LoadScene(SceneConstants.TUTORIAL_SCENE_HASH);
+        }
+        else
+        {
+            Debug.Log("Game Completed");
+        }
     }
 
     private IEnumerator CreateNextInputWindow(AudioClip audioClip, double intervalUntilScheduledTime)

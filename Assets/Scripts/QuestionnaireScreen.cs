@@ -13,13 +13,13 @@ public class QuestionnaireScreen : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] questions;
     [SerializeField] private RawImage fader;
 
-    private DataHelper dataHelper;
+    private GameDataHelper dataHelper;
     private bool activeCoroutine;
 
     public void Start()
     {
         StartCoroutine(FadeInQuestionnaire());
-        dataHelper = DataHelper.Instance;
+        dataHelper = GameDataHelper.Instance;
     }
 
     public void OnDestroy()

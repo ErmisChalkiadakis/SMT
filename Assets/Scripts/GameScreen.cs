@@ -14,7 +14,7 @@ public class GameScreen : MonoBehaviour
 
     public void Start()
     {
-        playSessionID = DataHelper.Instance.PlaySessionID;
+        playSessionID = GameDataHelper.Instance.PlaySessionID;
         StartCoroutine(StartGame());
     }
 
@@ -31,9 +31,18 @@ public class GameScreen : MonoBehaviour
             yield return null;
         }
 
+        int sequenceIndex;
+        if (GameDataHelper.Instance.isPitchNext)
+        {
+            sequenceIndex = 0;
+        }
+        else
+        {
+            sequenceIndex = 1;
+        }
+
         gameSequenceHelper.gameObject.SetActive(true);
-        gameSequenceHelper.SetPlaySessionID(playSessionID);
         audioMixer.gameObject.SetActive(true);
-        audioMixer.Initialize(SoundSequenceParserHelper.ParseTextFile(gameSoundSequences[playSessionID % 2]));
+        audioMixer.Initialize(SoundSequenceParserHelper.ParseTextFile(gameSoundSequences[sequenceIndex]));
     }
 }
