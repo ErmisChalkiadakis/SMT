@@ -8,6 +8,7 @@ public class GameScreen : MonoBehaviour
     [SerializeField] private GameSequenceHelper gameSequenceHelper;
     [SerializeField] private RawImage fader;
     [SerializeField] private AudioMixer audioMixer;
+    [SerializeField] private BeatVisualizer beatVisualizer;
     [SerializeField] private TextAsset[] gameSoundSequences;
     
     private int playSessionID;
@@ -43,6 +44,7 @@ public class GameScreen : MonoBehaviour
 
         gameSequenceHelper.gameObject.SetActive(true);
         audioMixer.gameObject.SetActive(true);
+        beatVisualizer.gameObject.SetActive(true);
         audioMixer.Initialize(SoundSequenceParserHelper.ParseTextFile(gameSoundSequences[sequenceIndex]));
     }
 }

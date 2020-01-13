@@ -14,7 +14,12 @@ public class TutorialScreen : MonoBehaviour
         tutorialSequenceHelper.SetTutorial(GameDataHelper.Instance.isPitchNext);
         tutorialSequenceHelper.OnTutorialCompletedEvent += OnTutorialCompleted;
     }
-    
+
+    public void OnDestroy()
+    {
+        tutorialSequenceHelper.OnTutorialCompletedEvent -= OnTutorialCompleted;
+    }
+
     private void OnTutorialCompleted()
     {
         StartCoroutine(LoadGameScene());

@@ -7,6 +7,7 @@ public class GameSequenceHelper : MonoBehaviour
 {
     [SerializeField] private SoundLibrary soundLibrary;
     [SerializeField] private AudioMixer audioMixer;
+    [SerializeField] private BeatVisualizer beatVisualizer;
     [SerializeField] private InputSystem inputSystem;
     [SerializeField] private UpdateCallback updateCallback;
 
@@ -54,11 +55,15 @@ public class GameSequenceHelper : MonoBehaviour
 
     private void CorrectResult()
     {
+        beatVisualizer.CorrectInput();
+
         correctnessPerformance.Add(1);
     }
 
     private void IncorrectResult()
     {
+        beatVisualizer.IncorrectInput();
+
         correctnessPerformance.Add(0);
     }
 

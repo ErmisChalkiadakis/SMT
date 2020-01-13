@@ -38,8 +38,7 @@ public class AudioVisualizer : MonoBehaviour
     {
         float rotationOffset = invertRotation ? rotateSpeed : -rotateSpeed;
         meshObject.transform.Rotate(new Vector3(0f, 0f, transform.rotation.z + rotationOffset));
-
-        //UpdateTriangles();
+        
         UpdateCircleScale();
     }
 

@@ -10,7 +10,7 @@ public class TutorialSequenceHelper : MonoBehaviour
 
     [SerializeField] [Range(0.01f, 0.2f)] private float textFadeSpeed = 0.15f;
     [SerializeField] private AudioMixer audioMixer;
-    [SerializeField] private GameObject audioVisualizer;
+    [SerializeField] private BeatVisualizer beatVisualizer;
     [SerializeField] private InputSystem inputSystem;
     [SerializeField] private UpdateCallback updateCallback;
     [SerializeField] private SoundLibrary soundLibrary;
@@ -57,7 +57,7 @@ public class TutorialSequenceHelper : MonoBehaviour
     private void SetAudioActive(bool value)
     {
         audioMixer.gameObject.SetActive(value);
-        audioVisualizer.SetActive(value);
+        beatVisualizer.gameObject.SetActive(value);
     }
     
     private void OnSoundScheduled(AudioClip audioClip, double intervalUntilScheduledTime)
@@ -81,6 +81,8 @@ public class TutorialSequenceHelper : MonoBehaviour
 
     private void CorrectResult()
     {
+        beatVisualizer.CorrectInput();
+
         if (soundSequenceIndex < activeSoundSequences.Length)
         {
             HighlightArrowKey(soundSequenceIndex);
@@ -96,6 +98,8 @@ public class TutorialSequenceHelper : MonoBehaviour
 
     private void IncorrectResult()
     {
+        beatVisualizer.IncorrectInput();
+
         audioMixer.Initialize();
     }
 
@@ -185,6 +189,8 @@ public class TutorialSequenceHelper : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(1.848f);
 
+
+        beatVisualizer.gameObject.SetActive(false);
         StartCoroutine(HideArrowKeys());
 
         Color fadeColor = tutorialCompletedText.color;
