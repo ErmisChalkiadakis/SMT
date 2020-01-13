@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameSequenceHelper : MonoBehaviour
 {
@@ -10,6 +12,9 @@ public class GameSequenceHelper : MonoBehaviour
     [SerializeField] private BeatVisualizer beatVisualizer;
     [SerializeField] private InputSystem inputSystem;
     [SerializeField] private UpdateCallback updateCallback;
+    [SerializeField] private TextMeshProUGUI sessionFinishedText;
+    [SerializeField] private TextMeshProUGUI studyFinishedText;
+    [SerializeField] private RawImage fader;
 
     private List<int> correctnessPerformance = new List<int>();
 
@@ -75,14 +80,58 @@ public class GameSequenceHelper : MonoBehaviour
     private IEnumerator CompletePlaySession()
     {
         SubmitPlayData();
-        yield return new WaitForSecondsRealtime(3f);
-        
+        yield return new WaitForSecondsRealtime(4f);
+
+        beatVisualizer.gameObject.SetActive(false);
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        TextMeshProUGUI textToShow;
+        if (GameDataHelper.Instance.isStudyComplete)
+        {
+            textToShow = studyFinishedText;
+        }
+        else
+        {
+            textToShow = sessionFinishedText;
+        }
+
+        Color textColor = new Color(1f, 1f, 1f, 0f);
+        while (textToShow.color.a < 1f)
+        {
+            textColor.a += 0.05f;
+            textToShow.color = textColor;
+            yield return null;
+        }
+
+        yield return new WaitForSecondsRealtime(4f);
+
         if (!GameDataHelper.Instance.isStudyComplete)
         {
+            fader.gameObject.SetActive(true);
+            Color faderColor = new Color(0f, 0f, 0f, 0f);
+            fader.color = faderColor;
+            while (fader.color.a < 1)
+            {
+                faderColor.a += 2f * Time.deltaTime;
+                fader.color = faderColor;
+                yield return null;
+            }
+
             SceneManager.LoadScene(SceneConstants.TUTORIAL_SCENE_HASH);
         }
         else
         {
+            fader.gameObject.SetActive(true);
+            Color faderColor = new Color(0f, 0f, 0f, 0f);
+            fader.color = faderColor;
+            while (fader.color.a < 1)
+            {
+                faderColor.a += 2f * Time.deltaTime;
+                fader.color = faderColor;
+                yield return null;
+            }
+
             GameDataHelper.Instance.RestartInstance();
             SceneManager.LoadScene(SceneConstants.INTRO_SCENE_HASH);
         }

@@ -13,6 +13,8 @@ public class TutorialScreen : MonoBehaviour
     {
         tutorialSequenceHelper.SetTutorial(GameDataHelper.Instance.isPitchNext);
         tutorialSequenceHelper.OnTutorialCompletedEvent += OnTutorialCompleted;
+
+        StartCoroutine(FadeIn());
     }
 
     public void OnDestroy()
@@ -25,6 +27,20 @@ public class TutorialScreen : MonoBehaviour
         StartCoroutine(LoadGameScene());
     }
     
+    private IEnumerator FadeIn()
+    {
+        fader.gameObject.SetActive(true);
+
+        Color faderColor = new Color(0f, 0f, 0f, 1f);
+        fader.color = faderColor;
+        while (fader.color.a > 0)
+        {
+            faderColor.a -= 1f * Time.deltaTime;
+            fader.color = faderColor;
+            yield return null;
+        }
+    }
+
     private IEnumerator LoadGameScene()
     {
         fader.gameObject.SetActive(true);
