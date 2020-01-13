@@ -143,6 +143,9 @@ public class TutorialSequenceHelper : MonoBehaviour
         if (clipID >= soundLibrary.IndexOfFirstCue)
         {
             Debug.Log("Creating Input Window");
+
+            beatVisualizer.WindowOpened();
+
             activeInputWindow = new InputWindow(audioClip, keyCode, AudioSettings.dspTime + audioClip.length, inputSystem, updateCallback);
             activeInputWindow.OnWindowShutEvent += OnWindowShut;
         }

@@ -16,6 +16,8 @@ public class BeatVisualizer : MonoBehaviour
 
     private Vector3 innerCircleCachedLocalScale;
     private Vector3 outerCircleCachedLocalScale;
+    private Color innerCircleCachedColor;
+    private Color outerCircleCachedColor;
     private double timeOfNextSwitch;
     private double switchInterval = BEAT_INTERVAL / 8f;
     private bool isExpanding = true;
@@ -26,6 +28,8 @@ public class BeatVisualizer : MonoBehaviour
 
         innerCircleCachedLocalScale = innerCircle.transform.localScale;
         outerCircleCachedLocalScale = outerCircle.transform.localScale;
+        innerCircleCachedColor = innerCircle.color;
+        outerCircleCachedColor = outerCircle.color;
     }
     
     public void Update()
@@ -48,6 +52,11 @@ public class BeatVisualizer : MonoBehaviour
         incorrectInputAudioSource.Play();
 
         StartCoroutine(FlashRed());
+    }
+
+    public void WindowOpened()
+    {
+        StartCoroutine(FlashYellow());
     }
 
     private void OnSoundScheduled(AudioClip audioClip, double timeUntilNextEvent)
@@ -85,7 +94,7 @@ public class BeatVisualizer : MonoBehaviour
 
     private IEnumerator FlashGreen()
     {
-        Color flashColor = innerCircle.color;
+        Color flashColor = innerCircleCachedColor;
         while (innerCircle.color.r > 0.1f)
         {
             flashColor.r -= 0.15f;
@@ -109,7 +118,7 @@ public class BeatVisualizer : MonoBehaviour
 
     private IEnumerator FlashRed()
     {
-        Color flashColor = innerCircle.color;
+        Color flashColor = innerCircleCachedColor;
         while (innerCircle.color.g > 0.1f)
         {
             flashColor.g -= 0.15f;
@@ -125,6 +134,28 @@ public class BeatVisualizer : MonoBehaviour
         {
             flashColor.g += 0.05f;
             flashColor.b += 0.05f;
+            innerCircle.color = flashColor;
+            outerCircle.color = flashColor * Vector4.one * 0.9f;
+            yield return null;
+        }
+    }
+
+    private IEnumerator FlashYellow()
+    {
+        Color flashColor = innerCircleCachedColor;
+        while (innerCircle.color.b > 0.1f)
+        {
+            flashColor.b -= 0.04f;
+            innerCircle.color = flashColor;
+            outerCircle.color = flashColor * Vector4.one * 0.9f;
+            yield return null;
+        }
+
+        yield return new WaitForSecondsRealtime(1f);
+
+        while (innerCircle.color.b < 1f)
+        {
+            flashColor.b += 0.15f;
             innerCircle.color = flashColor;
             outerCircle.color = flashColor * Vector4.one * 0.9f;
             yield return null;

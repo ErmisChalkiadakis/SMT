@@ -157,7 +157,7 @@ public class GameSequenceHelper : MonoBehaviour
     private IEnumerator CreateNextInputWindow(AudioClip audioClip, double intervalUntilScheduledTime)
     {
         yield return new WaitForSecondsRealtime((float)intervalUntilScheduledTime);
-
+        
         int clipID = soundLibrary.GetIDFromClip(audioClip);
         KeyCode keyCode = AudioKeyCodeConstants.GetKeyCodeFromID(clipID);
 
@@ -170,6 +170,8 @@ public class GameSequenceHelper : MonoBehaviour
 
         if (clipID >= soundLibrary.IndexOfFirstCue)
         {
+            beatVisualizer.WindowOpened();
+
             Debug.Log("Creating Input Window");
             activeInputWindow = new InputWindow(audioClip, keyCode, AudioSettings.dspTime + audioClip.length, inputSystem, updateCallback);
             activeInputWindow.OnWindowShutEvent += OnWindowShut;
