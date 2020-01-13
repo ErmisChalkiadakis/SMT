@@ -17,6 +17,7 @@ public class GameSequenceHelper : MonoBehaviour
     [SerializeField] private RawImage fader;
 
     private List<int> correctnessPerformance = new List<int>();
+    private List<double> reactionPerformance = new List<double>();
 
     private InputWindow activeInputWindow;
 
@@ -42,6 +43,20 @@ public class GameSequenceHelper : MonoBehaviour
         GameDataHelper.Instance.SessionFinished();
 
         StartCoroutine(CompletePlaySession());
+    }
+
+    private void OnButtonPressed(bool result, double reactionTime)
+    {
+        activeInputWindow.OnButtonPressedEvent -= OnButtonPressed;
+
+        if (result)
+        {
+            reactionPerformance.Add(reactionTime);
+        }
+        else
+        {
+            reactionPerformance.Add(-1);
+        }
     }
 
     private void OnWindowShut(bool result)
@@ -74,13 +89,15 @@ public class GameSequenceHelper : MonoBehaviour
 
     private void SubmitPlayData()
     {
-        GameDataHelper.Instance.SubmitPlayData(correctnessPerformance.ToArray());
+        GameDataHelper.Instance.SubmitPlayData(correctnessPerformance.ToArray(), reactionPerformance.ToArray());
     }
     
     private IEnumerator CompletePlaySession()
     {
+        yield return new WaitForSecondsRealtime(1.5f);
+
         SubmitPlayData();
-        yield return new WaitForSecondsRealtime(4f);
+        yield return new WaitForSecondsRealtime(2.5f);
 
         beatVisualizer.gameObject.SetActive(false);
 
@@ -147,6 +164,7 @@ public class GameSequenceHelper : MonoBehaviour
         if (activeInputWindow != null)
         {
             activeInputWindow.OnWindowShutEvent -= OnWindowShut;
+            activeInputWindow.OnButtonPressedEvent -= OnButtonPressed;
             activeInputWindow.Deactivate();
         }
 
@@ -155,6 +173,7 @@ public class GameSequenceHelper : MonoBehaviour
             Debug.Log("Creating Input Window");
             activeInputWindow = new InputWindow(audioClip, keyCode, AudioSettings.dspTime + audioClip.length, inputSystem, updateCallback);
             activeInputWindow.OnWindowShutEvent += OnWindowShut;
+            activeInputWindow.OnButtonPressedEvent += OnButtonPressed;
         }
         else
         {

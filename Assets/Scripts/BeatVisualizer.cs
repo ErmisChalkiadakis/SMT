@@ -7,7 +7,7 @@ public class BeatVisualizer : MonoBehaviour
 {
     private const double BEAT_INTERVAL = 1.848f;
 
-    [SerializeField] private float scaleExpansion = 0.6f;
+    [SerializeField] private float scaleExpansion = 0.01f;
     [SerializeField] private RawImage innerCircle;
     [SerializeField] private RawImage outerCircle;
     [SerializeField] private AudioSource correctInputAudioSource;
@@ -54,7 +54,7 @@ public class BeatVisualizer : MonoBehaviour
     {
         audioMixer.OnSoundScheduledEvent -= OnSoundScheduled;
 
-        timeOfNextSwitch = timeUntilNextEvent;
+        timeOfNextSwitch = AudioSettings.dspTime + timeUntilNextEvent;
     }
 
     private void UpdateCircleScale()
@@ -63,10 +63,13 @@ public class BeatVisualizer : MonoBehaviour
         {
             isExpanding = !isExpanding;
             timeOfNextSwitch += switchInterval;
+
+            innerCircleCachedLocalScale = innerCircle.transform.localScale;
+            outerCircleCachedLocalScale = outerCircle.transform.localScale;
         }
 
         double timeSincePreviousSwitch = AudioSettings.dspTime + switchInterval - timeOfNextSwitch;
-        double timeRatio = timeSincePreviousSwitch / timeOfNextSwitch;
+        double timeRatio = timeSincePreviousSwitch / switchInterval;
 
         if (isExpanding)
         {

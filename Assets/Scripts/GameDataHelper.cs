@@ -7,8 +7,9 @@ public class GameDataHelper
 {
     private const string DATA_FOLDER_PATH = "/Data";
     private const string QUESTIONNAIRE_TITLE = "Questionnaire_";
-    private const string PLAY_DATA_TITLE = "/PlayData_";
-    
+    private const string CORRECTNESS_DATA_TITLE = "/CorrectnessData_";
+    private const string REACTION_DATA_TITLE = "/ReactionData_";
+
     private int sessionsCompleted = 0;
 
     public bool isGroupAB { get; private set; }
@@ -28,7 +29,8 @@ public class GameDataHelper
 
     private string dataPath;
     private int playSessionID;
-    private List<int> playData;
+    private List<int> correctnessData;
+    private List<double> reactionData;
 
     public int PlaySessionID => playSessionID;
     public string StudyGroup
@@ -58,7 +60,8 @@ public class GameDataHelper
 
     private GameDataHelper()
     {
-        playData = new List<int>();
+        correctnessData = new List<int>();
+        reactionData = new List<double>();
         dataPath = Application.streamingAssetsPath + DATA_FOLDER_PATH;
         CheckAndCreateDataPath();
         playSessionID = CreateDirectoriesAndGetNextPlaySessionID();
@@ -80,18 +83,26 @@ public class GameDataHelper
         File.WriteAllText(dataPath + $"/{playSessionID}/" + QUESTIONNAIRE_TITLE + playSessionID + ".txt", sb.ToString());
     }
 
-    public void SubmitPlayData(int[] playData)
+    public void SubmitPlayData(int[] correctnessData, double[] reactionData)
     {
-        this.playData.AddRange(playData);
+        this.correctnessData.AddRange(correctnessData);
+        this.reactionData.AddRange(reactionData);
 
         if (isStudyComplete)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (int i in this.playData)
+            foreach (int i in this.correctnessData)
             {
                 sb.Append(i.ToString() + '\n');
             }
-            File.WriteAllText(dataPath + $"/{playSessionID}/" + PLAY_DATA_TITLE + $"{StudyGroup}_" + playSessionID + ".txt", sb.ToString());
+            File.WriteAllText(dataPath + $"/{playSessionID}/" + CORRECTNESS_DATA_TITLE + $"{StudyGroup}_" + playSessionID + ".txt", sb.ToString());
+
+            sb = new StringBuilder();
+            foreach (double d in this.reactionData)
+            {
+                sb.Append(d.ToString() + '\n');
+            }
+            File.WriteAllText(dataPath + $"/{playSessionID}/" + REACTION_DATA_TITLE + $"{StudyGroup}_" + playSessionID + ".txt", sb.ToString());
         }
     }
     

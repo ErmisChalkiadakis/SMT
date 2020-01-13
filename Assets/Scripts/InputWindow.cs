@@ -2,10 +2,12 @@
 
 public class InputWindow
 {
+    private const double BEAT_INTERVAL = 1.848;
+
     public delegate void WindowShut(bool result);
     public event WindowShut OnWindowShutEvent;
 
-    public delegate void ButtonPressed(bool result);
+    public delegate void ButtonPressed(bool result, double reactionTime);
     public event ButtonPressed OnButtonPressedEvent;
 
     public AudioClip playingAudioClip { get; private set; }
@@ -37,13 +39,14 @@ public class InputWindow
 
     private void Update()
     {
-        if (AudioSettings.dspTime > windowShutTime - 0.15f)
+        if (AudioSettings.dspTime > windowShutTime - 0.1f)
         {
             if (!anyButtonPressed)
             {
                 Debug.Log("Out of time");
             }
             OnWindowShutEvent?.Invoke(correctButtonPressed);
+            OnButtonPressedEvent?.Invoke(false, AudioSettings.dspTime + BEAT_INTERVAL - windowShutTime);
             Deactivate();
         }
     }
@@ -59,13 +62,13 @@ public class InputWindow
         if (keyCode == requiredKeyCode)
         {
             Debug.Log("Correct Input");
-            OnButtonPressedEvent?.Invoke(true);
+            OnButtonPressedEvent?.Invoke(true, AudioSettings.dspTime + BEAT_INTERVAL - windowShutTime);
             correctButtonPressed = true;
         }
         else
         {
             Debug.Log("Incorrect Input");
-            OnButtonPressedEvent?.Invoke(false);
+            OnButtonPressedEvent?.Invoke(true, AudioSettings.dspTime + BEAT_INTERVAL - windowShutTime);
             correctButtonPressed = false;
         }
         anyButtonPressed = true;
