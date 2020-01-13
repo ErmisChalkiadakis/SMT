@@ -13,6 +13,7 @@ public class GameDataHelper
 
     public bool isGroupAB { get; private set; }
     public bool isStudyComplete => sessionsCompleted == 2;
+    public bool isFirstSession => sessionsCompleted == 0;
     public bool isPitchNext
     {
         get

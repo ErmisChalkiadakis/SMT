@@ -13,13 +13,15 @@ public class TutorialSequenceHelper : MonoBehaviour
     [SerializeField] private InputSystem inputSystem;
     [SerializeField] private UpdateCallback updateCallback;
     [SerializeField] private SoundLibrary soundLibrary;
-    [SerializeField] private TextMeshProUGUI[] introTexts;
+    [SerializeField] private TextMeshProUGUI[] introTextsFirstTutorial;
+    [SerializeField] private TextMeshProUGUI[] introTextsSecondTutorial;
     [SerializeField] private TextAsset[] tutorialSoundSequencesPitch;
     [SerializeField] private TextAsset[] tutorialSoundSequencesRhythm;
 
     private InputWindow activeInputWindow;
     private bool isPitchTutorial;
     private TextAsset[] activeSoundSequences;
+    private TextMeshProUGUI[] activeIntroTexts;
     private int soundSequenceIndex = 0;
 
     private int introTextIndex = 0;
@@ -27,6 +29,14 @@ public class TutorialSequenceHelper : MonoBehaviour
     public void Start()
     {
         audioMixer.OnSoundScheduledEvent += OnSoundScheduled;
+        if (GameDataHelper.Instance.isFirstSession)
+        {
+            activeIntroTexts = introTextsFirstTutorial;
+        }
+        else
+        {
+            activeIntroTexts = introTextsSecondTutorial;
+        }
         StartCoroutine(ShowIntroText());
     }
 
@@ -121,24 +131,24 @@ public class TutorialSequenceHelper : MonoBehaviour
 
     private IEnumerator ShowIntroText()
     {
-        Color fadeColor = introTexts[introTextIndex].color;
-        while (introTexts[introTextIndex].color.a < 1f)
+        Color fadeColor = activeIntroTexts[introTextIndex].color;
+        while (activeIntroTexts[introTextIndex].color.a < 1f)
         {
             fadeColor.a += textFadeSpeed;
-            introTexts[introTextIndex].color = fadeColor;
+            activeIntroTexts[introTextIndex].color = fadeColor;
             yield return null;
         }
 
-        yield return new WaitForSecondsRealtime(2f);
+        yield return new WaitForSecondsRealtime(6.5f);
 
-        while (introTexts[introTextIndex].color.a > 0f)
+        while (activeIntroTexts[introTextIndex].color.a > 0f)
         {
             fadeColor.a -= textFadeSpeed;
-            introTexts[introTextIndex].color = fadeColor;
+            activeIntroTexts[introTextIndex].color = fadeColor;
             yield return null;
         }
 
-        if (introTextIndex + 1 < introTexts.Length)
+        if (introTextIndex + 1 < activeIntroTexts.Length)
         {
             introTextIndex++;
             StartCoroutine(ShowIntroText());
