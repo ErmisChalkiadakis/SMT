@@ -26,6 +26,7 @@ public class TutorialSequenceHelper : MonoBehaviour
     private TextAsset[] activeSoundSequences;
     private TextMeshProUGUI[] activeIntroTexts;
     private int soundSequenceIndex = 0;
+    private bool correctInputOnce = false;
 
     private int introTextIndex = 0;
 
@@ -83,8 +84,16 @@ public class TutorialSequenceHelper : MonoBehaviour
     {
         beatVisualizer.CorrectInput();
 
+        if (!correctInputOnce)
+        {
+            correctInputOnce = !correctInputOnce;
+            audioMixer.Initialize();
+            return;
+        }
+
         if (soundSequenceIndex < activeSoundSequences.Length)
         {
+            correctInputOnce = !correctInputOnce;
             HighlightArrowKey(soundSequenceIndex);
             audioMixer.Initialize(SoundSequenceParserHelper.ParseTextFile(activeSoundSequences[soundSequenceIndex]));
             soundSequenceIndex++;
