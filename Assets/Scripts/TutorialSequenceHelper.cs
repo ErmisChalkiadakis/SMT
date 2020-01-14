@@ -20,6 +20,8 @@ public class TutorialSequenceHelper : MonoBehaviour
     [SerializeField] private TextAsset[] tutorialSoundSequencesPitch;
     [SerializeField] private TextAsset[] tutorialSoundSequencesRhythm;
     [SerializeField] private RawImage[] arrowKeys;
+    [SerializeField] private TextMeshProUGUI[] pressIndicators;
+    [SerializeField] private TextMeshProUGUI tooLate;
 
     private InputWindow activeInputWindow;
     private bool isPitchTutorial;
@@ -64,6 +66,16 @@ public class TutorialSequenceHelper : MonoBehaviour
     private void OnSoundScheduled(AudioClip audioClip, double intervalUntilScheduledTime)
     {
         StartCoroutine(CreateNextInputWindow(audioClip, intervalUntilScheduledTime));
+    }
+
+    private void OnButtonPressed(bool result, double reactionTime)
+    {
+        activeInputWindow.OnButtonPressedEvent -= OnButtonPressed;
+
+        if (!result)
+        {
+            StartCoroutine(TooLate());
+        }
     }
 
     private void OnWindowShut(bool result)
@@ -146,6 +158,7 @@ public class TutorialSequenceHelper : MonoBehaviour
         if (activeInputWindow != null)
         {
             activeInputWindow.OnWindowShutEvent -= OnWindowShut;
+            activeInputWindow.OnButtonPressedEvent -= OnButtonPressed;
             activeInputWindow.Deactivate();
         }
 
@@ -157,6 +170,7 @@ public class TutorialSequenceHelper : MonoBehaviour
 
             activeInputWindow = new InputWindow(audioClip, keyCode, AudioSettings.dspTime + audioClip.length, inputSystem, updateCallback);
             activeInputWindow.OnWindowShutEvent += OnWindowShut;
+            activeInputWindow.OnButtonPressedEvent += OnButtonPressed;
         }
         else
         {
@@ -237,6 +251,10 @@ public class TutorialSequenceHelper : MonoBehaviour
                 arrowAlpha.a += textFadeSpeed / 5f;
                 arrowKey.color = arrowAlpha;
             }
+            foreach (TextMeshProUGUI indicator in pressIndicators)
+            {
+                indicator.color = arrowAlpha * 3f;
+            }
             yield return null;
         }
         HighlightArrowKey(0);
@@ -252,6 +270,31 @@ public class TutorialSequenceHelper : MonoBehaviour
                 arrowAlpha.a -= textFadeSpeed / 5f;
                 arrowKey.color = arrowAlpha;
             }
+            foreach (TextMeshProUGUI indicator in pressIndicators)
+            {
+                indicator.color = arrowAlpha / 4f;
+            }
+            yield return null;
+        }
+    }
+
+    private IEnumerator TooLate()
+    {
+        Color textColor = new Color(1f, 1f, 1f, 0f);
+        while (tooLate.color.a < 1f)
+        {
+            textColor.a += 0.15f;
+            tooLate.color = textColor;
+            yield return null;
+        }
+
+        yield return new WaitForSecondsRealtime(1f);
+
+        textColor = new Color(1f, 1f, 1f, 1f);
+        while (tooLate.color.a > 0f)
+        {
+            textColor.a -= 0.05f;
+            tooLate.color = textColor;
             yield return null;
         }
     }

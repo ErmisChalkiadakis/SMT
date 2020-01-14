@@ -15,6 +15,7 @@ public class GameSequenceHelper : MonoBehaviour
     [SerializeField] private TextMeshProUGUI sessionFinishedText;
     [SerializeField] private TextMeshProUGUI studyFinishedText;
     [SerializeField] private RawImage fader;
+    [SerializeField] private TextMeshProUGUI tooLate;
 
     private List<int> correctnessPerformance = new List<int>();
     private List<double> reactionPerformance = new List<double>();
@@ -55,6 +56,7 @@ public class GameSequenceHelper : MonoBehaviour
         }
         else
         {
+            StartCoroutine(TooLate());
             reactionPerformance.Add(-1);
         }
     }
@@ -180,6 +182,27 @@ public class GameSequenceHelper : MonoBehaviour
         else
         {
             activeInputWindow = null;
+        }
+    }
+
+    private IEnumerator TooLate()
+    {
+        Color textColor = new Color(1f, 1f, 1f, 0f);
+        while (tooLate.color.a < 1f)
+        {
+            textColor.a += 0.15f;
+            tooLate.color = textColor;
+            yield return null;
+        }
+
+        yield return new WaitForSecondsRealtime(1f);
+
+        textColor = new Color(1f, 1f, 1f, 1f);
+        while (tooLate.color.a > 0f)
+        {
+            textColor.a -= 0.05f;
+            tooLate.color = textColor;
+            yield return null;
         }
     }
 }
